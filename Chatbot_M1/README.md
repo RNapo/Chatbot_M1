@@ -49,7 +49,9 @@ Primeiramente clonar o projeto no Github:
 
 git clone https://github.com/RNapo/Chatbot_M1.git
 
-Após clonar
+Após clonar, digite no terminal:
+
+cd Chatbot_M1\
 
 Criar um ambiente virtual, comando abaixo:
 
