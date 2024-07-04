@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot - M1 Motors</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <h3 class="text-center">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="Logo M1 Motors" class="logo">
+            </h3>
+            <div class="col-md-4 col-md-offset-4">
+                <div id="chatPanel" class="panel panel-info">
+                    <div class="panel-heading">
+                        <strong><span class="glyphicon glyphicon-question-sign"></span> Olá, eu sou o Bot M1 e estou aqui para lhe atender!</strong>
+                    </div>
+                    <div class="panel-body fixed-panel">
+                        <ul class="media-list">
+                            <!-- Mensagens do chat serão adicionadas aqui -->
+                        </ul>
+                    </div>
+                    <div class="panel-footer">
+                        <form method="post" id="chatbot-form">
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="Enviar mensagem" name="messageText" id="messageText" autofocus>
+                                <span class="input-group-btn">
+                                    <button class="btn btn-info" type="button" id="chatbot-form-btn">Enviar</button>
+                                    <button class="btn btn-info" type="button" id="chatbot-form-btn-clear">Limpar</button>
+                                </span>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script>
+        $(function () {
+            $('#chatbot-form-btn').click(function (e) {
+                e.preventDefault();
+                $('#chatbot-form').submit();
+            });
+
+            $('#chatbot-form-btn-clear').click(function (e) {
+                e.preventDefault();
+                $('#chatPanel').find('.media-list').html('');
+            });
+
+            $('#chatbot-form').submit(function (e) {
+                e.preventDefault();
+                var message = $('#messageText').val();
+                $(".media-list").append(
+                    '<li class="media user-message"><div class="media-body">' +
+                    message + '</div></li>');
+
+                $.ajax({
+                    type: "POST",
+                    url: "/pesquisa",
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        $('#messageText').val('');
+                        var answer = response.answer;
+                        var buttons = '';
+
+                        // Verifica se a resposta contém opções e cria os botões
+                        if (response.answer.includes("Escolha uma opção abaixo")) {
+                            buttons = `
+                                <div class="button-group">
+                                    <button class="btn btn-primary btn-option" data-option="Financiamento de carro">Financiamento de carro</button>
+                                    <button class="btn btn-primary btn-option" data-option="Falar com atendente">Falar com atendente</button>
+                                    <button class="btn btn-primary btn-option" data-option="Link do site">Link do site</button>
+                                    <button class="btn btn-primary btn-option" data-option="Endereço">Endereço</button>
+                                </div>`;
+                        }
+
+                        $(".media-list").append(
+                            '<li class="media bot-message"><div class="media-body">' +
+                            answer + buttons + '</div></li>');
+                        $(".fixed-panel").stop().animate({
+                            scrollTop: $(".fixed-panel")[0].scrollHeight
+                        }, 1000);
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                });
+            });
+
+            // Evento para lidar com cliques nos botões de opção
+            $(document).on('click', '.btn-option', function () {
+                var option = $(this).data('option');
+                $("#messageText").val(option);
+                $('#chatbot-form').submit();
+            });
+        });
+    </script>
+</body>
+
+</html>
