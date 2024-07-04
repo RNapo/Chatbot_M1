@@ -2,7 +2,7 @@ Projeto de Chatbot da M1 Motors referente ao teste
 
 As tecnologias utilizadas nesse projeto foram:
 
-**Python**,
+**Python (Versão 3.6.8)**,
 **Javascript**,
 **HTML**,
 **CSS**,
